@@ -34,7 +34,6 @@ class FileService {
             for (Entry entry : repository.getAllEntries()) {
                 writer.println(entry);
             }
-            System.out.println("Entries saved successfully!");
         } catch (IOException e) {
             System.err.println("Error saving file: " + e.getMessage());
         }

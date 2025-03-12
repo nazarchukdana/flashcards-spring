@@ -10,12 +10,11 @@ public class Entry {
         this.polish = polish;
         this.german = german;
     }
-/*
+
     public String getPolish() { return polish; }
     public String getEnglish() { return english; }
     public String getGerman() { return german; }
 
- */
     @Override
     public String toString(){
         return english + " -- "+polish+" -- "+german;
