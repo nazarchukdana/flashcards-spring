@@ -1,4 +1,5 @@
 package org.example.s29888tpo2;
+import org.example.s29888tpo2.formatter.WordFormatter;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -12,10 +13,12 @@ enum Command {
 public class FlashcardsController {
     private final EntryRepository repository;
     private final FileService fileService;
+    private final WordFormatter wordFormatter;
 
-    public FlashcardsController(EntryRepository repository, FileService fileService) {
+    public FlashcardsController(EntryRepository repository, FileService fileService, WordFormatter wordFormatter) {
         this.repository = repository;
         this.fileService = fileService;
+        this.wordFormatter = wordFormatter;
         Thread flashcardsThread = new Thread(this::start);
         flashcardsThread.start();
     }
@@ -65,11 +68,11 @@ public class FlashcardsController {
     private void addFlashcard(Scanner scanner) {
         System.out.println("_________________________________________");
         System.out.print("Enter the word in English:\n>> ");
-        String english = scanner.nextLine().toLowerCase().trim();
+        String english = scanner.nextLine().trim();
         System.out.print("Enter the word in Polish:\n>> ");
-        String polish = scanner.nextLine().toLowerCase().trim();
+        String polish = scanner.nextLine().trim();
         System.out.print("Enter the word in German:\n>> ");
-        String german = scanner.nextLine().toLowerCase().trim();
+        String german = scanner.nextLine().trim();
         repository.addNewEntry(english, polish, german);
         System.out.println("New flashcard is created!");
         System.out.println("_________________________________________");
@@ -86,7 +89,7 @@ public class FlashcardsController {
 
         while (true) {
             Entry entry = entries.get((int) (Math.random() * entries.size()));
-            String word = entry.getEnglish();
+            String word = wordFormatter.format(entry.getEnglish());
 
             System.out.println("Translate this word in POLISH: " + word);
             System.out.print(">> ");
@@ -97,7 +100,7 @@ public class FlashcardsController {
                 System.out.println("Exiting test mode. Good job!");
                 break;
             }
-            String correctAnswer = entry.getPolish();
+            String correctAnswer = wordFormatter.format(entry.getPolish());
             if (userAnswer.equalsIgnoreCase(correctAnswer)) {
                 System.out.println("Correct!");
             } else {
@@ -112,7 +115,7 @@ public class FlashcardsController {
                 System.out.println("Exiting test mode. Good job!");
                 break;
             }
-            correctAnswer = entry.getGerman();
+            correctAnswer = wordFormatter.format(entry.getGerman());
             if (userAnswer.equalsIgnoreCase(correctAnswer)) {
                 System.out.println("Correct!");
             } else {
@@ -131,7 +134,7 @@ public class FlashcardsController {
         }
         else {
             for (Entry entry : entries) {
-                System.out.println(entry);
+                System.out.println(wordFormatter.format(entry.toString()));
             }
         }
         System.out.println("_________________________________________");

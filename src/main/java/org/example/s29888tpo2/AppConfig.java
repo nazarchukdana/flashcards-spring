@@ -1,8 +1,12 @@
 package org.example.s29888tpo2;
 
-import org.springframework.context.annotation.ComponentScan;
+import org.example.s29888tpo2.formatter.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
-@ComponentScan(basePackages = "org.example.s29888tpo2")
-public class AppConfig {}
+public class AppConfig {
+
+}

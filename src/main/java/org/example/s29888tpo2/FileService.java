@@ -1,5 +1,7 @@
 package org.example.s29888tpo2;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -8,11 +10,12 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @Service
+@PropertySource("classpath:new.properties")
 class FileService {
-    private static final String FILE_PATH = "flashcards.txt";
+    private final String FILE_PATH;
 
-    public FileService() {
-
+    public FileService(@Value("${pl.edu.pja.tpo02.filename}") String filePath) {
+        FILE_PATH = filePath;
     }
     public void loadEntries(EntryRepository repository){
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
