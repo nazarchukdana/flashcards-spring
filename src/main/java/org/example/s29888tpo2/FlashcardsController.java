@@ -4,6 +4,7 @@ import org.example.s29888tpo2.repository.EntryRepository;
 import org.example.s29888tpo2.service.StorageService;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,18 +17,20 @@ public class FlashcardsController {
     private final EntryRepository repository;
     private final StorageService storageService;
     private final WordFormatter wordFormatter;
+    private final LanguageUtils languageUtils;
     private final Scanner scanner;
 
-    public FlashcardsController(EntryRepository repository, StorageService storageService, WordFormatter wordFormatter, Scanner scanner) {
+    public FlashcardsController(EntryRepository repository, StorageService storageService, WordFormatter wordFormatter, LanguageUtils languageUtils, Scanner scanner) {
         this.repository = repository;
         this.storageService = storageService;
         this.wordFormatter = wordFormatter;
+        this.languageUtils = languageUtils;
         this.scanner = scanner;
         Thread flashcardsThread = new Thread(this::start);
         flashcardsThread.start();
     }
     public void start() {
-        storageService.loadEntries(repository);
+        storageService.loadEntries(repository, languageUtils.languagesSize());
         System.out.println("Welcome to the Flashcards Application!");
         showMenu();
         while (true) {
@@ -70,14 +73,19 @@ public class FlashcardsController {
     }
     private void addFlashcard() {
         System.out.println("_________________________________________");
-        System.out.print("Enter the word in English:\n>> ");
-        String english = scanner.nextLine().trim();
-        System.out.print("Enter the word in Polish:\n>> ");
-        String polish = scanner.nextLine().trim();
-        System.out.print("Enter the word in German:\n>> ");
-        String german = scanner.nextLine().trim();
-        repository.addNewEntry(english, polish, german);
-        System.out.println("New flashcard is created!");
+        List<String> translations = new ArrayList<>();
+        for (String languageCode : languageUtils.getLanguageCodes()){
+            String language = languageUtils.getFullLanguage(languageCode);
+            System.out.print("Enter the word in "+language+":\n>> ");
+            String word = scanner.nextLine().trim();
+            translations.add(word);
+        }
+        try {
+            repository.addNewEntry(translations);
+            System.out.println("New flashcard is created!");
+        } catch (Exception e) {
+            System.err.println("Error while creating new entry: " + e.getMessage());
+        }
         System.out.println("_________________________________________");
     }
     private void test() {
@@ -89,44 +97,42 @@ public class FlashcardsController {
         }
         System.out.println("Flashcards Test: You will be asked to translate words.");
         System.out.println("Type 'exit' anytime to stop the test.");
-
+        System.out.print("Choose the source languageCode for translation ("+String.join(", ", languageUtils.getLanguageCodes())+"):\n>>");
+        String languageCode = scanner.nextLine().trim();
+        if(!languageUtils.isValidLanguage(languageCode)){
+            System.out.println("Invalid source languageCode. English is chosen by default.");
+            languageCode = "en";
+        }
         while (true) {
             Entry entry = entries.get((int) (Math.random() * entries.size()));
-            String word = wordFormatter.format(entry.getEnglish());
+            String word = wordFormatter.format(entry.getTranslation(languageCode));
+            for(String targetLanguageCode : languageUtils.getLanguageCodes()) {
+                if (targetLanguageCode.equals(languageCode)) {
+                    continue;
+                }
+                String correctAnswer = wordFormatter.format(entry.getTranslation(targetLanguageCode));
+                String targetLanguage = languageUtils.getFullLanguage(targetLanguageCode);
+                if (!askQuestion("Enter the word in "+targetLanguage+": "+word, correctAnswer)) {
+                    return;
+                }
 
-            System.out.println("Translate this word in POLISH: " + word);
-            System.out.print(">> ");
-
-            String userAnswer = scanner.nextLine().trim();
-
-            if (userAnswer.equals("exit")) {
-                System.out.println("Exiting test mode. Good job!");
-                break;
-            }
-            String correctAnswer = wordFormatter.format(entry.getPolish());
-            if (userAnswer.equalsIgnoreCase(correctAnswer)) {
-                System.out.println("Correct!");
-            } else {
-                System.out.println("Incorrect. The correct answer was: " + correctAnswer);
-            }
-            System.out.println("Translate this word in GERMAN: " + word);
-            System.out.print(">> ");
-
-            userAnswer = scanner.nextLine().trim();
-
-            if (userAnswer.equals("exit")) {
-                System.out.println("Exiting test mode. Good job!");
-                break;
-            }
-            correctAnswer = wordFormatter.format(entry.getGerman());
-            if (userAnswer.equalsIgnoreCase(correctAnswer)) {
-                System.out.println("Correct!");
-            } else {
-                System.out.println("Incorrect. The correct answer was: " + correctAnswer);
             }
             System.out.println("_________________________________________");
         }
-        System.out.println("_________________________________________");
+    }
+    private boolean askQuestion(String question, String correctAnswer) {
+        System.out.print(question+"\n>> ");
+        String userAnswer = scanner.nextLine().trim();
+        if (userAnswer.equals("exit")) {
+            System.out.println("Exiting test mode. Good job!");
+            return false;
+        } else if (userAnswer.equalsIgnoreCase(correctAnswer)) {
+            System.out.println("Correct!");
+            return true;
+        } else {
+            System.out.println("Incorrect. The correct answer was: " + correctAnswer);
+            return true;
+        }
     }
 
     private void showAllFlashcards() {

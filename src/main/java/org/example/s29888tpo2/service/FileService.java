@@ -7,6 +7,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @PropertySource("classpath:new.properties")
@@ -16,14 +18,15 @@ class FileService implements StorageService {
     public FileService(@Value("${pl.edu.pja.tpo02.filename}") String filePath) {
         FILE_PATH = filePath;
     }
-
-    public void loadEntries(EntryRepository repository){
+    @Override
+    public void loadEntries(EntryRepository repository, int languagesCount){
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split("--");
-                if (parts.length == 3) {
-                    repository.addNewEntry(parts[0].trim(), parts[1].trim(), parts[2].trim());
+                String[] parts = line.split(" -- ");
+                if (parts.length == languagesCount) {
+                    List<String> trimmedParts = Arrays.stream(parts).map(String::trim).toList();
+                    repository.addNewEntry(trimmedParts);
                 } else {
                     System.err.println("Invalid line format: " + line);
                 }
