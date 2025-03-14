@@ -1,24 +1,31 @@
-package org.example.s29888tpo2;
+package org.example.s29888tpo2.repository;
 
+import org.example.s29888tpo2.Entry;
 import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
-public class EntryRepository {
+public class EntryRepository implements DataRepository<Entry> {
     private final List<Entry> entries;
+
     public EntryRepository() {
         this.entries = new ArrayList<>();
     }
-    public void addEntry(Entry entry) {
+
+    @Override
+    public void add(Entry entry) {
         entries.add(entry);
     }
+
     public void addNewEntry(String english, String polish, String german) {
-        Entry entry = new Entry(english, polish, german);
-        addEntry(entry);
+        entries.add(new Entry(english, polish, german));
     }
 
-    public List<Entry> getAllEntries() {
+    @Override
+    public List<Entry> getAll() {
         return entries;
     }
 }

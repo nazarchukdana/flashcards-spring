@@ -1,5 +1,7 @@
 package org.example.s29888tpo2;
 import org.example.s29888tpo2.formatter.WordFormatter;
+import org.example.s29888tpo2.repository.EntryRepository;
+import org.example.s29888tpo2.service.StorageService;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -12,19 +14,20 @@ enum Command {
 @Controller
 public class FlashcardsController {
     private final EntryRepository repository;
-    private final FileService fileService;
+    private final StorageService storageService;
     private final WordFormatter wordFormatter;
+    private final Scanner scanner;
 
-    public FlashcardsController(EntryRepository repository, FileService fileService, WordFormatter wordFormatter) {
+    public FlashcardsController(EntryRepository repository, StorageService storageService, WordFormatter wordFormatter, Scanner scanner) {
         this.repository = repository;
-        this.fileService = fileService;
+        this.storageService = storageService;
         this.wordFormatter = wordFormatter;
+        this.scanner = scanner;
         Thread flashcardsThread = new Thread(this::start);
         flashcardsThread.start();
     }
     public void start() {
-        Scanner scanner = new Scanner(System.in);
-        fileService.loadEntries(repository);
+        storageService.loadEntries(repository);
         System.out.println("Welcome to the Flashcards Application!");
         showMenu();
         while (true) {
@@ -37,17 +40,17 @@ public class FlashcardsController {
                         showAllFlashcards();
                         break;
                     case add:
-                        addFlashcard(scanner);
+                        addFlashcard();
                         break;
                     case test:
-                        test(scanner);
+                        test();
                         break;
                     case help:
                         showMenu();
                         break;
                     case quit:
                         System.out.println("Have a good day! See you soon!");
-                        fileService.saveEntries(repository);
+                        storageService.saveEntries(repository);
                         return;
                 }
             } catch (IllegalArgumentException e) {
@@ -65,7 +68,7 @@ public class FlashcardsController {
                 "quit -- to quit the application");
         System.out.println("_________________________________________");
     }
-    private void addFlashcard(Scanner scanner) {
+    private void addFlashcard() {
         System.out.println("_________________________________________");
         System.out.print("Enter the word in English:\n>> ");
         String english = scanner.nextLine().trim();
@@ -77,9 +80,9 @@ public class FlashcardsController {
         System.out.println("New flashcard is created!");
         System.out.println("_________________________________________");
     }
-    private void test(Scanner scanner) {
+    private void test() {
         System.out.println("_________________________________________");
-        List<Entry> entries = repository.getAllEntries();
+        List<Entry> entries = repository.getAll();
         if (entries.isEmpty()) {
             System.out.println("No flashcards available for testing.");
             return;
@@ -128,7 +131,7 @@ public class FlashcardsController {
 
     private void showAllFlashcards() {
         System.out.println("_________________________________________");
-        List<Entry> entries = repository.getAllEntries();
+        List<Entry> entries = repository.getAll();
         if (entries.isEmpty()) {
             System.out.println("No flashcards available.");
         }

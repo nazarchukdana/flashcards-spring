@@ -1,22 +1,22 @@
-package org.example.s29888tpo2;
+package org.example.s29888tpo2.service;
 
+import org.example.s29888tpo2.Entry;
+import org.example.s29888tpo2.repository.EntryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 
 @Service
 @PropertySource("classpath:new.properties")
-class FileService {
+class FileService implements StorageService {
     private final String FILE_PATH;
 
     public FileService(@Value("${pl.edu.pja.tpo02.filename}") String filePath) {
         FILE_PATH = filePath;
     }
+
     public void loadEntries(EntryRepository repository){
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
@@ -34,7 +34,7 @@ class FileService {
     }
     public void saveEntries(EntryRepository repository) {
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(FILE_PATH), true)) {
-            for (Entry entry : repository.getAllEntries()) {
+            for (Entry entry : repository.getAll()) {
                 writer.println(entry);
             }
         } catch (IOException e) {
