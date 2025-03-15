@@ -1,4 +1,4 @@
-package org.example.s29888tpo2;
+package org.example.s29888tpo2.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;

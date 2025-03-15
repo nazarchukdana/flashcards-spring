@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: uppercase
+    active: default
   application:
     name: s29888-TPO2
   banner:

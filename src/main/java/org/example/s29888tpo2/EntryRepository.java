@@ -1,13 +1,12 @@
-package org.example.s29888tpo2.repository;
+package org.example.s29888tpo2;
 
-import org.example.s29888tpo2.Entry;
-import org.example.s29888tpo2.LanguageUtils;
+import org.example.s29888tpo2.utils.LanguageUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-public class EntryRepository implements DataRepository<Entry> {
+public class EntryRepository{
     private final List<Entry> entries;
     private final LanguageUtils languageUtils;
 
@@ -16,7 +15,6 @@ public class EntryRepository implements DataRepository<Entry> {
         this.languageUtils = languageUtils;
     }
 
-    @Override
     public void add(Entry entry) {
         entries.add(entry);
     }
@@ -35,7 +33,6 @@ public class EntryRepository implements DataRepository<Entry> {
         add(entry);
     }
 
-    @Override
     public List<Entry> getAll() {
         return entries;
     }

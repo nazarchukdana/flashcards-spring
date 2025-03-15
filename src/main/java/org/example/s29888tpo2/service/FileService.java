@@ -1,7 +1,7 @@
 package org.example.s29888tpo2.service;
 
 import org.example.s29888tpo2.Entry;
-import org.example.s29888tpo2.repository.EntryRepository;
+import org.example.s29888tpo2.EntryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;

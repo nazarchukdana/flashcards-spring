@@ -1,7 +1,7 @@
 package org.example.s29888tpo2;
 import org.example.s29888tpo2.formatter.WordFormatter;
-import org.example.s29888tpo2.repository.EntryRepository;
 import org.example.s29888tpo2.service.StorageService;
+import org.example.s29888tpo2.utils.LanguageUtils;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class FlashcardsController {
         }
         System.out.println("Flashcards Test: You will be asked to translate words.");
         System.out.println("Type 'exit' anytime to stop the test.");
-        System.out.print("Choose the source languageCode for translation ("+String.join(", ", languageUtils.getLanguageCodes())+"):\n>>");
+        System.out.print("Choose the source language for translation ("+String.join(", ", languageUtils.getLanguageCodes())+"):\n>>");
         String languageCode = scanner.nextLine().trim();
         if(!languageUtils.isValidLanguage(languageCode)){
             System.out.println("Invalid source languageCode. English is chosen by default.");
