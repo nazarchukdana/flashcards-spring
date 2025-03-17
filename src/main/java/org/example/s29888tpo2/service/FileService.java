@@ -3,7 +3,9 @@ package org.example.s29888tpo2.service;
 import org.example.s29888tpo2.Entry;
 import org.example.s29888tpo2.EntryRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -11,13 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-@PropertySource("classpath:new.properties")
-class FileService implements StorageService {
-    private final String FILE_PATH;
+@ConfigurationProperties(prefix = "pl.edu.pja.tpo02")
+@PropertySource("classpath:properties.yml")
+public class FileService implements StorageService {
 
-    public FileService(@Value("${pl.edu.pja.tpo02.filename}") String filePath) {
-        FILE_PATH = filePath;
-    }
+    @Value("${filename}")
+    private String FILE_PATH;
+
     @Override
     public void loadEntries(EntryRepository repository, int languagesCount){
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {

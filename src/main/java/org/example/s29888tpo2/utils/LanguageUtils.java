@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@PropertySource("classpath:new.properties")
+@PropertySource("classpath:properties.yml")
 public class LanguageUtils {
 
     private final Map<String, String> languages;
